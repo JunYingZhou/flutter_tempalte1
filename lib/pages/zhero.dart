@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class ZHeroPage extends StatefulWidget {
 
-  final String arguments;
+  // final String arguments1;
+  final Map arguments;
   const ZHeroPage({super.key, required this.arguments});
 
   @override
@@ -20,13 +21,14 @@ class _HeroPageState extends State<ZHeroPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(widget.arguments),
+            Image.network(widget.arguments["imageUrl"]),
+            Text(widget.arguments.values.toString()),            
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, "/");
               },
-              child: Text("Detail"),
+              child: Text("Go Home"),
             ),
           ],
         ),

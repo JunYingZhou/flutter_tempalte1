@@ -27,7 +27,7 @@ class _TabsState extends State<Tabs> {
       appBar: AppBar(
         elevation: 1,
         // backgroundColor: Colors.red,
-        title: const Text("Flutter App")
+        title: const Text("A APP v1")
       ),
       drawer: Drawer(
         child: Column(
