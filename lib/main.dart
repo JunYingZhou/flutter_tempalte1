@@ -6,22 +6,26 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'RyanChow APP',
       theme: ThemeData(
         primarySwatch: Colors.amber,
+        scaffoldBackgroundColor: Colors.white, // 亮色模式背景
+        useMaterial3: true,
       ),
-        initialRoute: '/signIn',
+      darkTheme: ThemeData(
+        primarySwatch: Colors.amber,
+        scaffoldBackgroundColor: Colors.grey[900], // 暗色模式背景
+        useMaterial3: true,
+      ),
+      themeMode: ThemeMode.system, // 跟随系统主题
+      initialRoute: '/',
       onGenerateRoute: onGenerateRoute,
     );
-    throw UnimplementedError();
   }
-
-
 }

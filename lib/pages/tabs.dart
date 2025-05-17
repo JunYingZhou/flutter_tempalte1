@@ -4,8 +4,9 @@ import './tabs/category.dart';
 import './tabs/message.dart';
 import './tabs/setting.dart';
 import './tabs/user.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // 导入 SharedPreferences 包
 
-class Tabs extends StatefulWidget { 
+class Tabs extends StatefulWidget {
   const Tabs({super.key});
 
   @override
@@ -21,38 +22,75 @@ class _TabsState extends State<Tabs> {
     SettingPage(),
     UserPage()
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // 检查登录状态
+    _checkLoginStatus();
+  }
+
+  // 异步检查 isLoggedIn
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    if (!isLoggedIn && mounted) {
+      // 延迟导航直到 widget 构建完成
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          // 弹框提示登录
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('提示'),
+              content: const Text('请先登录'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pushReplacementNamed(context, '/signIn'),
+                  child: const Text('确定'),
+                ),
+              ],
+            ), 
+          );
+          // Navigator.pushReplacementNamed(context, '/signIn');
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
-        // backgroundColor: Colors.red,
-        title: const Text("A APP v1")
+        title: const Text("A APP v1"),
       ),
       drawer: Drawer(
         child: Column(
           children: [
             Row(
-              children:  [
+              children: [
                 Expanded(
-                    flex: 1,
-                    child: UserAccountsDrawerHeader(
-                      accountName: const Text("itying"),
-                      accountEmail: const Text("itying@qq.com"),
-                      otherAccountsPictures:[
-                        Image.network("https://www.itying.com/images/flutter/1.png"),
-                           Image.network("https://www.itying.com/images/flutter/2.png"),
-                           Image.network("https://www.itying.com/images/flutter/3.png"),
-                      ],
-                      currentAccountPicture:const CircleAvatar(
-                        backgroundImage:NetworkImage("https://www.itying.com/images/flutter/3.png")
+                  flex: 1,
+                  child: UserAccountsDrawerHeader(
+                    accountName: const Text("itying"),
+                    accountEmail: const Text("itying@qq.com"),
+                    otherAccountsPictures: [
+                      Image.network("https://www.itying.com/images/flutter/1.png"),
+                      Image.network("https://www.itying.com/images/flutter/2.png"),
+                      Image.network("https://www.itying.com/images/flutter/3.png"),
+                    ],
+                    currentAccountPicture: const CircleAvatar(
+                      backgroundImage: NetworkImage("https://www.itying.com/images/flutter/3.png"),
+                    ),
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage("https://www.itying.com/images/flutter/2.png"),
                       ),
-                      decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                              image: NetworkImage(
-                                  "https://www.itying.com/images/flutter/2.png"))),
-                    ))
+                    ),
+                  ),
+                ),
               ],
             ),
             const ListTile(
@@ -72,49 +110,44 @@ class _TabsState extends State<Tabs> {
           ],
         ),
       ),
-     
       body: _pages[_currentIndex],
-      
-
       bottomNavigationBar: BottomNavigationBar(
-          fixedColor: Colors.red, //选中的颜色
-          // iconSize:35,           //底部菜单大小
-          currentIndex: _currentIndex, //第几个菜单选中
-          type: BottomNavigationBarType.fixed, //如果底部有4个或者4个以上的菜单的时候就需要配置这个参数
-          onTap: (index) {
-            //点击菜单触发的方法
-            //注意
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: "首页"),
-            BottomNavigationBarItem(icon: Icon(Icons.category), label: "分类"),
-            BottomNavigationBarItem(icon: Icon(Icons.message), label: "消息"),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: "设置"),
-            BottomNavigationBarItem(icon: Icon(Icons.people), label: "用户")
-          ]),
+        fixedColor: Colors.red,
+        currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "首页"),
+          BottomNavigationBarItem(icon: Icon(Icons.category), label: "分类"),
+          BottomNavigationBarItem(icon: Icon(Icons.message), label: "消息"),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "设置"),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: "用户"),
+        ],
+      ),
       floatingActionButton: Container(
-        height: 60, //调整FloatingActionButton的大小
+        height: 60,
         width: 60,
         padding: const EdgeInsets.all(5),
-        margin: const EdgeInsets.only(top: 5), //调整FloatingActionButton的位置
+        margin: const EdgeInsets.only(top: 5),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(30),
         ),
         child: FloatingActionButton(
-            backgroundColor: _currentIndex == 2 ? Colors.red : Colors.blue,
-            child: const Icon(Icons.add),
-            onPressed: () {
-              setState(() {
-                _currentIndex = 2;
-              });
-            }),
+          backgroundColor: _currentIndex == 2 ? Colors.red : Colors.blue,
+          child: const Icon(Icons.add),
+          onPressed: () {
+            setState(() {
+              _currentIndex = 2;
+            });
+          },
+        ),
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerDocked, //配置浮动按钮的位置
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

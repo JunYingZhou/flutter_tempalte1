@@ -102,6 +102,7 @@ class __SignInFormState extends State<_SignInForm> {
           _passwordController.text == 'password') {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true);
+        setState(() => _isLoading = false);
         widget.onSuccess?.call();
       } else {
         setState(() {
