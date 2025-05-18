@@ -1,6 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: '登录示例',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
+      home: const SignIn(),
+    );
+  }
+}
+
 class SignInDialog {
   static void show(BuildContext context) {
     showDialog(
@@ -38,6 +59,7 @@ class __SignInFormState extends State<_SignInForm> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String _errorMessage = '';
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -64,10 +86,20 @@ class __SignInFormState extends State<_SignInForm> {
           const SizedBox(height: 20),
           TextFormField(
             controller: _passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(
+            obscureText: _obscurePassword,
+            decoration: InputDecoration(
               labelText: '密码',
-              prefixIcon: Icon(Icons.lock),
+              prefixIcon: const Icon(Icons.lock),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              ),
             ),
             validator: (value) => value?.isEmpty ?? true ? '请输入密码' : null,
           ),
@@ -80,6 +112,9 @@ class __SignInFormState extends State<_SignInForm> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _isLoading ? null : _login,
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 50),
+            ),
             child: _isLoading
                 ? const CircularProgressIndicator()
                 : const Text('立即登录'),
@@ -96,17 +131,27 @@ class __SignInFormState extends State<_SignInForm> {
     });
 
     if (_formKey.currentState!.validate()) {
-      await Future.delayed(const Duration(seconds: 1));
+      try {
+        await Future.delayed(const Duration(seconds: 1));
 
-      if (_usernameController.text == 'admin' &&
-          _passwordController.text == 'password') {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isLoggedIn', true);
-        setState(() => _isLoading = false);
-        widget.onSuccess?.call();
-      } else {
+        if (_usernameController.text == 'admin' &&
+            _passwordController.text == 'password') {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('isLoggedIn', true);
+          await prefs.setString('username', _usernameController.text);
+          setState(() => _isLoading = false);
+          widget.onSuccess?.call();
+        } else {
+          setState(() {
+            _errorMessage = '用户名或密码错误';
+            _isLoading = false;
+          });
+        }
+        _usernameController.clear();
+        _passwordController.clear();
+      } catch (e) {
         setState(() {
-          _errorMessage = '用户名或密码错误';
+          _errorMessage = '登录失败，请稍后重试';
           _isLoading = false;
         });
       }
@@ -122,28 +167,56 @@ class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start, // 从顶部开始
-          children: [
-            Image.asset(
-              'assets/images/AIALOGO.png',
-              width: 100,
-              height: 100,
-            ),
-            const SizedBox(height: 20),
-            Card(
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: _SignInForm(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/AIALOGO.png',
+                width: 100,
+                height: 100,
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _SignInForm(
+                    onSuccess: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('登录成功')),
+                      );
+                      // Navigate to home screen or perform other actions
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  // Implement forgot password functionality
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('忘记密码功能待实现')),
+                  );
+                },
+                child: const Text('忘记密码？'),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Navigate to registration screen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('注册功能待实现')),
+                  );
+                },
+                child: const Text('没有账号？立即注册'),
+              ),
+            ],
+          ),
         ),
       ),
     );

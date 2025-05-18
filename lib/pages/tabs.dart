@@ -33,6 +33,9 @@ class _TabsState extends State<Tabs> {
   // 异步检查 isLoggedIn
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
+    // 删除 isLoggedIn 键
+    // await prefs.remove('isLoggedIn'); // 删除键
+    await prefs.setBool('isLoggedIn', false); // 设置键值为 true，用于测试
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     if (!isLoggedIn && mounted) {
       // 延迟导航直到 widget 构建完成
