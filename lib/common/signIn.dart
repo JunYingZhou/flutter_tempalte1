@@ -141,6 +141,7 @@ class __SignInFormState extends State<_SignInForm> {
           await prefs.setString('username', _usernameController.text);
           setState(() => _isLoading = false);
           widget.onSuccess?.call();
+          Navigator.pushReplacementNamed(context, '/'),
         } else {
           setState(() {
             _errorMessage = '用户名或密码错误';
@@ -168,54 +169,56 @@ class SignIn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/AIALOGO.png',
-                width: 100,
-                height: 100,
-              ),
-              const SizedBox(height: 20),
-              Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: _SignInForm(
-                    onSuccess: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('登录成功')),
-                      );
-                      // Navigate to home screen or perform other actions
-                    },
+        child: Center(
+          child: SingleChildScrollView( // 防止底部内容被键盘遮挡
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/AIALOGO.png',
+                    width: 100,
+                    height: 100,
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: _SignInForm(
+                        onSuccess: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('登录成功')),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('忘记密码功能待实现')),
+                      );
+                    },
+                    child: const Text('忘记密码？'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('注册功能待实现')),
+                      );
+                    },
+                    child: const Text('没有账号？立即注册'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  // Implement forgot password functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('忘记密码功能待实现')),
-                  );
-                },
-                child: const Text('忘记密码？'),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Navigate to registration screen
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('注册功能待实现')),
-                  );
-                },
-                child: const Text('没有账号？立即注册'),
-              ),
-            ],
+            ),
           ),
         ),
       ),

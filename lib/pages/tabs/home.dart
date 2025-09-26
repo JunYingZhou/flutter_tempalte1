@@ -17,18 +17,39 @@ class _HomePageState extends State<HomePage> {
               arguments: {"imageUrl": value['imageUrl']});
         },
         child: Container(
+          // decoration: BoxDecoration(
+          //   color: Theme.of(context).colorScheme.surface, // 背景使用主题表面颜色
+          //   border: Border.all(
+          //     color: Theme.of(context).colorScheme.outline, // 边框使用主题轮廓颜色
+          //     width: 1,
+          //   ),
+          //   borderRadius: BorderRadius.circular(8), // 添加圆角，增强视觉效果
+          //     // border: Border.all(
+          //         // color: const Color.fromRGBO(233, 233, 233, 0.9), width: 1)),
+          //         // color: Theme.of(context).colorScheme.surface, width: 1)
+          // // ),
           decoration: BoxDecoration(
-              border: Border.all(
-                  color: const Color.fromRGBO(233, 233, 233, 0.9), width: 1)),
+            color: Theme.of(context).colorScheme.surface, // 背景使用主题表面颜色
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline, // 边框使用主题轮廓颜色
+              width: 0.5,
+            ),
+            borderRadius: BorderRadius.circular(8), // 添加圆角，增强视觉效果
+          ),
           child: Column(
             children: <Widget>[
               Hero(tag: value['imageUrl'], child: Image.network(value['imageUrl'])),
               const SizedBox(height: 10),
               Text(
-                value['title'],
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
-              )
+                  value['title'],
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.onSurface, // 文本颜色
+                  ),
+                )
             ],
           ),
         ),

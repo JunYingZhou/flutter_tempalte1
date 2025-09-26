@@ -4,7 +4,8 @@ import './tabs/category.dart';
 import './tabs/message.dart';
 import './tabs/setting.dart';
 import './tabs/user.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // 导入 SharedPreferences 包
+import 'package:shared_preferences/shared_preferences.dart';
+import '../components/app_drawer.dart';
 
 class Tabs extends StatefulWidget {
   const Tabs({super.key});
@@ -26,36 +27,41 @@ class _TabsState extends State<Tabs> {
   @override
   void initState() {
     super.initState();
-    // 检查登录状态
     _checkLoginStatus();
   }
 
-  // 异步检查 isLoggedIn
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
-    // 删除 isLoggedIn 键
-    // await prefs.remove('isLoggedIn'); // 删除键
-    await prefs.setBool('isLoggedIn', false); // 设置键值为 true，用于测试
+    // await prefs.remove('isLoggedIn'); // 删除键（用于测试）
+    await prefs.setBool('isLoggedIn', false); // 设置为 false（测试用）
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     if (!isLoggedIn && mounted) {
-      // 延迟导航直到 widget 构建完成
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          // 弹框提示登录
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('提示'),
-              content: const Text('请先登录'),
+              title: Text(
+                '提示',
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              ),
+              content: Text(
+                '请先登录',
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pushReplacementNamed(context, '/signIn'),
-                  child: const Text('确定'),
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, '/signIn'),
+                  child: Text(
+                    '确定',
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.primary),
+                  ),
                 ),
               ],
-            ), 
+            ),
           );
-          // Navigator.pushReplacementNamed(context, '/signIn');
         }
       });
     }
@@ -66,70 +72,148 @@ class _TabsState extends State<Tabs> {
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
-        title: const Text("A APP v1"),
-      ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: UserAccountsDrawerHeader(
-                    accountName: const Text("itying"),
-                    accountEmail: const Text("itying@qq.com"),
-                    otherAccountsPictures: [
-                      Image.network("https://www.itying.com/images/flutter/1.png"),
-                      Image.network("https://www.itying.com/images/flutter/2.png"),
-                      Image.network("https://www.itying.com/images/flutter/3.png"),
-                    ],
-                    currentAccountPicture: const CircleAvatar(
-                      backgroundImage: NetworkImage("https://www.itying.com/images/flutter/3.png"),
-                    ),
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage("https://www.itying.com/images/flutter/2.png"),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const ListTile(
-              leading: CircleAvatar(
-                child: Icon(Icons.people),
-              ),
-              title: Text("个人中心"),
-            ),
-            const Divider(),
-            const ListTile(
-              leading: CircleAvatar(
-                child: Icon(Icons.settings),
-              ),
-              title: Text("系统设置"),
-            ),
-            const Divider(),
-          ],
+        title: Text(
+          "A APP v1",
+          // 居中
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
         ),
+        centerTitle: true,
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
       ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
+      // drawer: Drawer(
+      //   backgroundColor: Theme.of(context).colorScheme.surface, // 背景使用主题表面颜色,
+      //   child: Column(
+      //     children: [
+      //       Row(
+      //         children: [
+      //           Expanded(
+      //             flex: 1,
+      //             child: UserAccountsDrawerHeader(
+      //               accountName: Text(
+      //                 "itying",
+      //                 style: TextStyle(
+      //                     color: Theme.of(context).colorScheme.onPrimary),
+      //               ),
+      //               accountEmail: Text(
+      //                 "itying@qq.com",
+      //                 style: TextStyle(
+      //                     color: Theme.of(context).colorScheme.onPrimary),
+      //               ),
+      //               otherAccountsPictures: [
+      //                 Image.network("https://www.itying.com/images/flutter/1.png"),
+      //                 Image.network("https://www.itying.com/images/flutter/2.png"),
+      //                 Image.network("https://www.itying.com/images/flutter/3.png"),
+      //               ],
+      //               currentAccountPicture: const CircleAvatar(
+      //                 backgroundImage:
+      //                     NetworkImage("https://www.itying.com/images/flutter/3.png"),
+      //               ),
+      //               decoration: const BoxDecoration(
+      //                 image: DecorationImage(
+      //                   fit: BoxFit.cover,
+      //                   image: NetworkImage("https://www.itying.com/images/flutter/2.png"),
+      //                 ),
+      //               ),
+      //             ),
+      //           ),
+      //         ],
+      //       ),
+      //       ListTile(
+      //         leading: CircleAvatar(
+      //           child: Icon(
+      //             Icons.people,
+      //             color: Theme.of(context).colorScheme.onSecondaryContainer,
+      //           ),
+      //           backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+      //         ),
+      //         title: Text(
+      //           "个人中心",
+      //           style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+      //         ),
+      //         onTap: () {
+      //           Navigator.pop(context);
+      //         },
+      //       ),
+      //       const Divider(),
+      //       ListTile(
+      //         leading: CircleAvatar(
+      //           child: Icon(
+      //             Icons.settings,
+      //             color: Theme.of(context).colorScheme.onSecondaryContainer,
+      //           ),
+      //           backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+      //         ),
+      //         title: Text(
+      //           "系统设置",
+      //           style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+      //         ),
+      //       ),
+      //       const Divider(
+      //         color: Colors.transparent, // Divider 使用主题轮廓颜色
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      drawer: AppDrawer(),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        fixedColor: Colors.red,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "首页"),
-          BottomNavigationBarItem(icon: Icon(Icons.category), label: "分类"),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: "消息"),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "设置"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "用户"),
-        ],
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "首页",
+            tooltip: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: "分类",
+            tooltip: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            label: "消息",
+            tooltip: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "设置",
+            tooltip: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: "用户",
+            tooltip: '',
+          ),
+        ].map((item) {
+          return BottomNavigationBarItem(
+            icon: item.icon,
+            label: item.label,
+            tooltip: item.tooltip,
+            activeIcon: Icon(
+              (item.icon as Icon).icon,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          );
+        }).toList(),
       ),
       floatingActionButton: Container(
         height: 60,
@@ -137,12 +221,17 @@ class _TabsState extends State<Tabs> {
         padding: const EdgeInsets.all(5),
         margin: const EdgeInsets.only(top: 5),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(30),
         ),
         child: FloatingActionButton(
-          backgroundColor: _currentIndex == 2 ? Colors.red : Colors.blue,
-          child: const Icon(Icons.add),
+          backgroundColor: _currentIndex == 2
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.secondary,
+          child: Icon(
+            Icons.add,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
           onPressed: () {
             setState(() {
               _currentIndex = 2;

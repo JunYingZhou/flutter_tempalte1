@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import '../pages/zhero.dart';
 import '../pages/tabs.dart';
 import '../common/signIn.dart';
+import '../pages/system_setting.dart';
 
 final Map<String, Function> routes = {
   '/': (context) => const Tabs(),
   '/hero': (context, {arguments}) => ZHeroPage(arguments: arguments),
   '/signIn': (context) => const SignIn(),
+  '/systemSetting': (context) => const SystemSetting(),
 };
 
 var onGenerateRoute = (RouteSettings settings) {
